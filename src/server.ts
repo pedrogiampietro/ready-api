@@ -1,7 +1,7 @@
 require("dotenv").config();
 
 import express from "express";
-import userRoutes from "./api/routes/review.routes";
+import userRoutes from "./api/routes/user.routes";
 import tripRoutes from "./api/routes/trip.routes";
 import reviewRoutes from "./api/routes/review.routes";
 

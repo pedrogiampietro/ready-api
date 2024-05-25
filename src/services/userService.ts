@@ -1,7 +1,7 @@
-import { User } from "../entities/User";
+import { User } from "@prisma/client";
 import * as userRepository from "../repositories/userRepository";
 
-export const register = async (userData: Partial<User>) => {
+export const register = async (userData: User) => {
   return await userRepository.create(userData);
 };
 

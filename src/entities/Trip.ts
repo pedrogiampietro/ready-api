@@ -2,7 +2,7 @@ import { User } from "./User";
 import { Review } from "./Review";
 
 export class Trip {
-  id!: number;
+  id!: string;
   title!: string;
   banner!: string;
   locationName!: string;
@@ -17,6 +17,6 @@ export class Trip {
   mealCost!: number;
   totalCost!: number;
   user!: User;
-  userId!: number;
+  userId!: string;
   reviews?: Review[];
 }

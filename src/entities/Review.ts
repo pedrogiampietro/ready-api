@@ -1,9 +1,9 @@
 import { Trip } from "./Trip";
 
 export class Review {
-  id!: number;
+  id!: string;
   rating!: number;
   comment?: string;
   trip!: Trip;
-  tripId!: number;
+  tripId!: string;
 }
