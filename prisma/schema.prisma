@@ -1,14 +1,45 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
+  seed     = "node prisma/seed.ts"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int     @id @default(autoincrement())
+  email    String  @unique
+  password String
+  name     String?
+  trips    Trip[]
+}
+
+model Trip {
+  id            Int      @id @default(autoincrement())
+  title         String
+  banner        String
+  locationName  String
+  longitude     Float
+  latitude      Float
+  images        String[]
+  hotelName     String
+  hotelPrice    Float
+  departureDate DateTime
+  returnDate    DateTime
+  flightCost    Float
+  mealCost      Float
+  totalCost     Float
+  user          User     @relation(fields: [userId], references: [id])
+  userId        Int
+  reviews       Review[]
+}
+
+model Review {
+  id      Int     @id @default(autoincrement())
+  rating  Int
+  comment String?
+  trip    Trip    @relation(fields: [tripId], references: [id])
+  tripId  Int
 }
