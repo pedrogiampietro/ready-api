@@ -5,9 +5,9 @@ src/
 │ ├── routes/ # Definições de rotas
 │ └── controllers/ # Controladores para lidar com a lógica de negócios
 ├── config/ # Configurações do projeto
-├── database/ # Configurações do banco de dados e migrações
 ├── services/ # Serviços para encapsular a lógica de negócios
 ├── repositories/ # Repositórios para interagir com o banco de dados
+├── entities/ # Entidades para interagir com o banco de dados
 ├── utils/ # Funções utilitárias
 └── index.ts # Arquivo de entrada do aplicativo
 
