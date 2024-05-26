@@ -5,24 +5,11 @@ import { format } from "date-fns";
 const genAI = new GoogleGenerativeAI(config.googleApiKey);
 const googleAIClient = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-// Meu orçamento orçamento: - classe média baixa, mais ou menos de 500 á 3000 total pela viagem
-
-// Quanto você está disposto a gastar com passagens, hospedagem e refeições? - Valor de uma pessoa de classe média baixa.
-
-// Seu estilo de viagem: - Tanto faz
-
-// Você prefere luxo, conforto, praticidade ou algo mais econômico? - Conforto
-
-// O que você gosta de fazer? Você prefere explorar a vida noturna, museus, parques, shoppings, eventos culturais?\n*
-
-// Seu nível de conforto com transporte público:** Você se sente confortável usando metrô e ônibus?
-
 export const generateTravel = async (data: any): Promise<string> => {
-  console.log("req.data", data);
   try {
     const prompt = `Por favor, me forneça as melhores opções de voo, hospedagem com seus respectivos valores, e também recomendações de restaurantes em ${
       data.destinationLocation
-    }. Meu orçamento total para passagens, hospedagem e refeições é de ${
+    }, podendo me mandar url das categorias também. Meu orçamento total para passagens, hospedagem e refeições é de ${
       data.budget
     } reais. Estou disposto a gastar com base na minha classe social ${
       data.classLevel
@@ -40,7 +27,6 @@ export const generateTravel = async (data: any): Promise<string> => {
     )}, e retornar em ${format(data.flightReturnDate, "dd/MM/yyyy")}.`;
 
     const result = await googleAIClient.generateContent(prompt);
-
     const response = await result.response;
     const text = response.text();
 

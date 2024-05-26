@@ -10,6 +10,8 @@ export const chat = async (req: Request, res: Response) => {
     comfortableWithPublicTransport,
   } = req.body;
 
+  // TODO validar req.
+
   try {
     const response = await generateTravel(req.body);
     res.json({ response });
