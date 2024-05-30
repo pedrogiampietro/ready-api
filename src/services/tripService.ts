@@ -1,9 +1,9 @@
-import { Trip } from "../entities/Trip";
 import * as tripRepository from "../repositories/tripRepository";
+import { FrontendTrip } from "../repositories/tripRepository";
 
 // Passa os dados para o repositório
 
-export const createTrip = async (tripData: Trip) => {
+export const createTrip = async (tripData: FrontendTrip) => {
   return await tripRepository.create(tripData);
 };
 

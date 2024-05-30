@@ -1,5 +1,8 @@
 import { Request, Response } from "express";
-import { generateTravel } from "../../services/googleAIService";
+import {
+  generateTravel,
+  generateEmbellishTitle,
+} from "../../services/googleAIService";
 
 export const chat = async (req: Request, res: Response) => {
   const {
@@ -14,6 +17,19 @@ export const chat = async (req: Request, res: Response) => {
 
   try {
     const response = await generateTravel(req.body);
+    res.json({ response });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const embellishTitleChat = async (req: Request, res: Response) => {
+  const { title } = req.body;
+
+  // TODO validar req.
+
+  try {
+    const response = await generateEmbellishTitle(req.body);
     res.json({ response });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
