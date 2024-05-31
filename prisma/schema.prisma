@@ -17,23 +17,24 @@ model User {
 }
 
 model Trip {
-  id            String   @id @default(uuid())
-  title         String
-  banner        String
-  locationName  String
-  longitude     Float
-  latitude      Float
-  images        String[]
-  hotelName     String
-  hotelPrice    Float
-  departureDate DateTime
-  returnDate    DateTime
-  flightCost    Float
-  mealCost      Float
-  totalCost     Float
-  user          User     @relation(fields: [userId], references: [id])
-  userId        String
-  reviews       Review[]
+  id                    String   @id @default(uuid())
+  title                 String
+  banner                String
+  locationName          String
+  longitude             Float
+  latitude              Float
+  images                String[]
+  hotelName             String
+  hotelPrice            Float
+  accommodationDuration Int
+  departureDate         DateTime
+  returnDate            DateTime
+  flightCost            Float
+  mealCost              Float
+  totalCost             Float
+  user                  User     @relation(fields: [userId], references: [id])
+  userId                String
+  reviews               Review[]
 }
 
 model Review {
