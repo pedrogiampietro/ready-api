@@ -2,6 +2,7 @@ require("dotenv").config();
 
 import express from "express";
 import cors from "cors";
+import path from "path";
 import userRoutes from "./api/routes/user.routes";
 import tripRoutes from "./api/routes/trip.routes";
 import reviewRoutes from "./api/routes/review.routes";
@@ -38,6 +39,7 @@ app.use("/users", userRoutes);
 app.use("/trips", tripRoutes);
 app.use("/reviews", reviewRoutes);
 app.use("/chat", chatRoutes);
+app.use("/tmp", express.static(path.join(__dirname, "..", "tmp")));
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
