@@ -13,6 +13,7 @@ router.post(
   ]),
   tripController.createTrip
 );
-router.get("/:id", tripController.getTrip);
+router.get("/trips-by-user/:userId", tripController.getAllTripsByUserId);
+router.post("/save-with-ia", tripController.createTripByIA);
 
 export default router;

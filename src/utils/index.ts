@@ -10,6 +10,11 @@ export const capitalizeFirstLetter = (string: string) => {
 };
 
 export async function getSignedUrlForKey(key: any) {
+  if (!key) {
+    console.warn("Empty value provided for key");
+    return null;
+  }
+
   const command = new GetObjectCommand({
     Bucket: process.env.BUCKET_NAME,
     Key: key,

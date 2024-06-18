@@ -17,6 +17,7 @@ export const chat = async (req: Request, res: Response) => {
 
   try {
     const response = await generateTravel(req.body);
+
     res.json({ response });
   } catch (error: any) {
     res.status(500).json({ error: error.message });

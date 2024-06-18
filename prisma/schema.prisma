@@ -17,30 +17,58 @@ model User {
 }
 
 model Trip {
-  id                    String   @id @default(uuid())
-  title                 String
-  banner                String
-  locationName          String
-  longitude             Float
-  latitude              Float
-  images                String[]
-  hotelName             String
-  hotelPrice            Float
-  accommodationDuration Int
-  departureDate         DateTime
-  returnDate            DateTime
-  flightCost            Float
-  mealCost              Float
-  totalCost             Float
-  user                  User     @relation(fields: [userId], references: [id])
-  userId                String
-  reviews               Review[]
+  id                             String       @id @default(uuid())
+  title                          String
+  banner                         String?
+  images                         String[]
+  departureLocation              String
+  destinationLocation            String
+  comfortableWithPublicTransport Boolean?
+  longitude                      Float
+  latitude                       Float
+  classLevel                     String?
+  budgetTravel                   Float?
+  hotelName                      String
+  hotelPrice                     Float
+  accommodationDuration          Int
+  departureDate                  DateTime
+  returnDate                     DateTime
+  flightCost                     Float
+  mealCost                       Float
+  totalCost                      Float
+  user                           User         @relation(fields: [userId], references: [id])
+  userId                         String
+  restaurants                    Restaurant[]
+  itineraries                    Itinerary[]
+  tips                           String[]
+  reviews                        Review[]
+  observacoes                    String[]
+  dicasExtras                    String[]     @map("dicas_extras")
+}
+
+model Restaurant {
+  id     String @id @default(uuid())
+  name   String
+  url    String
+  budget String
+  trip   Trip   @relation(fields: [tripId], references: [id])
+  tripId String
+}
+
+model Itinerary {
+  id          String   @id @default(uuid())
+  date        DateTime
+  activity    String
+  description String
+  url         String
+  trip        Trip     @relation(fields: [tripId], references: [id])
+  tripId      String
 }
 
 model Review {
-  id      String  @id @default(uuid())
+  id      String @id @default(uuid())
+  content String
   rating  Int
-  comment String?
-  trip    Trip    @relation(fields: [tripId], references: [id])
+  trip    Trip   @relation(fields: [tripId], references: [id])
   tripId  String
 }
