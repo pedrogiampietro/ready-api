@@ -1,40 +1,7 @@
 import { Request, Response } from "express";
 import * as tripService from "../../services/tripService";
 import { uploadToS3 } from "../../middlewares/clouds3";
-import { randomUUID } from "node:crypto";
-
-export const createTrip = async (req: any, res: Response) => {
-  try {
-    const bannerKey = `banners/${randomUUID()}-${
-      req.files.banner[0].originalname
-    }`;
-    await uploadToS3(req.files.banner[0], process.env.BUCKET_NAME, bannerKey);
-
-    const imageKeys = req.files.images
-      ? await Promise.all(
-          req.files.images.map(async (file: any) => {
-            const key = `images/${randomUUID()}-${file.originalname}`;
-            await uploadToS3(file, process.env.BUCKET_NAME, key);
-            return key;
-          })
-        )
-      : [];
-
-    const tripData = {
-      ...req.body,
-      banner: bannerKey,
-      images: imageKeys,
-      flightDepartureDate: new Date(req.body.flightDepartureDate).toISOString(),
-      flightReturnDate: new Date(req.body.flightReturnDate).toISOString(),
-    };
-
-    const trip = await tripService.createTrip(tripData);
-    res.status(201).json(trip);
-  } catch (error: any) {
-    console.error("Error in createTrip controller:", error.message);
-    res.status(500).json({ error: error.message });
-  }
-};
+import { randomUUID as uuidv4 } from "node:crypto";
 
 export const getTrip = async (req: Request, res: Response) => {
   try {
@@ -49,7 +16,7 @@ export const getAllTrip = async (req: Request, res: Response) => {
   try {
     const trip = await tripService.getAllTrip();
 
-    console.log("trip", trip);
+    // console.log("trip", trip);
 
     res.status(200).json(trip);
   } catch (error: any) {
@@ -90,24 +57,24 @@ export const createTripByIA = async (req: Request, res: Response) => {
     userId,
   } = req.body;
 
-  console.log("Dados extraídos do req.body:", {
-    voo,
-    hospedagem,
-    restaurantes,
-    roteiro,
-    observacoes,
-    dicas_extras,
-    classLevel,
-    budget,
-    travelStyle,
-    selectedItems,
-    comfortableWithPublicTransport,
-    departureLocation,
-    destinationLocation,
-    flightDepartureDate,
-    flightReturnDate,
-    userId,
-  });
+  // console.log("Dados extraídos do req.body:", {
+  //   voo,
+  //   hospedagem,
+  //   restaurantes,
+  //   roteiro,
+  //   observacoes,
+  //   dicas_extras,
+  //   classLevel,
+  //   budget,
+  //   travelStyle,
+  //   selectedItems,
+  //   comfortableWithPublicTransport,
+  //   departureLocation,
+  //   destinationLocation,
+  //   flightDepartureDate,
+  //   flightReturnDate,
+  //   userId,
+  // });
 
   const flightCost = parseFloat(
     voo.preco.replace("R$ ", "").replace(".", "").replace(",", ".")
@@ -141,17 +108,17 @@ export const createTripByIA = async (req: Request, res: Response) => {
     totalCost = flightCost + hotelPrice * accommodationDuration;
   }
 
-  console.log("Custos calculados:", {
-    flightCost,
-    hotelPrice,
-    accommodationDuration,
-    totalCost,
-  });
+  // console.log("Custos calculados:", {
+  //   flightCost,
+  //   hotelPrice,
+  //   accommodationDuration,
+  //   totalCost,
+  // });
 
-  console.log("Datas serializadas:", {
-    flightDepartureDateSerealized,
-    flightReturnDateSerealized,
-  });
+  // console.log("Datas serializadas:", {
+  //   flightDepartureDateSerealized,
+  //   flightReturnDateSerealized,
+  // });
 
   try {
     const newTrip = await tripService.createTripByIA({
@@ -186,5 +153,123 @@ export const createTripByIA = async (req: Request, res: Response) => {
     res
       .status(500)
       .json({ error: "An error occurred while creating the trip." });
+  }
+};
+
+export const createTrip = async (req: any, res: Response) => {
+  try {
+    let bannerKey = null;
+    if (req.files.banner && req.files.banner[0] && req.files.banner[0].path) {
+      bannerKey = `banners/${uuidv4()}-${req.files.banner[0].originalname}`;
+      await uploadToS3(req.files.banner[0], process.env.BUCKET_NAME, bannerKey);
+    }
+
+    const imageKeys = req.files.images
+      ? await Promise.all(
+          req.files.images
+            .map(async (file: any) => {
+              if (file.path) {
+                const key = `images/${uuidv4()}-${file.originalname}`;
+                await uploadToS3(file, process.env.BUCKET_NAME, key);
+                return key;
+              }
+            })
+            .filter(Boolean)
+        )
+      : [];
+
+    // Inicializar meals se não estiver presente no corpo da requisição
+    const meals = req.body.meals || {
+      breakfast: "0",
+      lunch: "0",
+      dinner: "0",
+    };
+
+    const tripData = {
+      ...req.body,
+      banner: bannerKey,
+      images: imageKeys,
+      flightDepartureDate:
+        new Date(req.body.flightDepartureDate).toISOString() || new Date(),
+      flightReturnDate:
+        new Date(req.body.flightReturnDate).toISOString() || new Date(),
+      flightCost: req.body.flightCost || 0,
+      meals: {
+        breakfast: meals.breakfast || "0",
+        lunch: meals.lunch || "0",
+        dinner: meals.dinner || "0",
+      },
+    };
+
+    const trip = await tripService.createTrip(tripData);
+    res.status(201).json(trip);
+  } catch (error: any) {
+    console.error("Error in createTrip controller:", error.message);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const updateTrip = async (req: any, res: Response) => {
+  try {
+    const tripId = req.params.id;
+
+    let bannerKey = null;
+    if (
+      req.files &&
+      req.files.banner &&
+      req.files.banner[0] &&
+      req.files.banner[0].path
+    ) {
+      bannerKey = `banners/${uuidv4()}-${req.files.banner[0].originalname}`;
+      await uploadToS3(req.files.banner[0], process.env.BUCKET_NAME, bannerKey);
+    }
+
+    const imageKeys =
+      req.files && req.files.images
+        ? await Promise.all(
+            req.files.images
+              .map(async (file: any) => {
+                if (file.path) {
+                  const key = `images/${uuidv4()}-${file.originalname}`;
+                  await uploadToS3(file, process.env.BUCKET_NAME, key);
+                  return key;
+                }
+              })
+              .filter(Boolean)
+          )
+        : [];
+
+    const meals = req.body.meals || { breakfast: "0", lunch: "0", dinner: "0" };
+
+    const tripData = {
+      ...req.body,
+      banner: bannerKey,
+      images: imageKeys,
+      flightDepartureDate: req.body.flightDepartureDate
+        ? new Date(req.body.flightDepartureDate).toISOString()
+        : null,
+      flightReturnDate: req.body.flightReturnDate
+        ? new Date(req.body.flightReturnDate).toISOString()
+        : null,
+      departureDate: req.body.departureDate
+        ? new Date(req.body.departureDate).toISOString()
+        : null,
+      returnDate: req.body.returnDate
+        ? new Date(req.body.returnDate).toISOString()
+        : null,
+      meals: {
+        breakfast: meals.breakfast || "0",
+        lunch: meals.lunch || "0",
+        dinner: meals.dinner || "0",
+      },
+    };
+
+    console.log("Trip Data to Update:", tripData);
+
+    const trip = await tripService.updateTrip(tripId, tripData);
+    res.status(200).json(trip);
+  } catch (error: any) {
+    console.error("Error in updateTrip controller:", error.message);
+    res.status(500).json({ error: error.message });
   }
 };

@@ -5,6 +5,8 @@ import { upload } from "../../middlewares/multer";
 const router = Router();
 
 router.get("/", tripController.getAllTrip);
+router.get("/trips-by-user/:userId", tripController.getAllTripsByUserId);
+router.post("/save-with-ia", tripController.createTripByIA);
 router.post(
   "/create",
   upload.fields([
@@ -13,7 +15,13 @@ router.post(
   ]),
   tripController.createTrip
 );
-router.get("/trips-by-user/:userId", tripController.getAllTripsByUserId);
-router.post("/save-with-ia", tripController.createTripByIA);
+router.put(
+  "/:id",
+  upload.fields([
+    { name: "banner", maxCount: 1 },
+    { name: "images", maxCount: 10 },
+  ]),
+  tripController.updateTrip
+);
 
 export default router;

@@ -3,45 +3,69 @@ import { capitalizeFirstLetter, getSignedUrlForKey } from "../utils";
 
 const prisma = new PrismaClient();
 
-interface Meal {
+export interface Meal {
   checked: boolean;
   value: string;
 }
 
-interface Meals {
+export interface Meals {
   breakfast: Meal;
   lunch: Meal;
   dinner: Meal;
 }
 
-export interface FrontendTrip extends Trip {
-  meals: Meals;
-  headerImage: string;
+export interface FrontendTrip {
+  title: string;
+  departureLocation: string;
+  destinationLocation: string;
   accommodation: string;
-  location: string;
+  accommodationDuration: string;
+  accommodationPrice: string;
   flightDepartureDate: string;
   flightReturnDate: string;
-  accommodationPrice: number;
+  flightCost: string;
+  userId: string;
+  meals?: Meals;
+  banner?: string;
+  images?: string[];
+  [key: string]: any; // Adicionado para permitir acesso dinâmico
 }
 
 export const create = async (tripData: any) => {
   try {
-    if (
-      !tripData ||
-      !tripData.title ||
-      !tripData.banner ||
-      !tripData.location ||
-      !tripData.accommodation
-    ) {
-      throw new Error("Missing required trip data.");
+    const requiredFields = [
+      "title",
+      "departureLocation",
+      "destinationLocation",
+      "accommodation",
+      "accommodationDuration",
+      "accommodationPrice",
+      "flightDepartureDate",
+      "flightReturnDate",
+      "flightCost",
+      "userId",
+    ];
+
+    const missingFields = requiredFields.filter((field) => !tripData[field]);
+
+    if (missingFields.length > 0) {
+      console.error("Missing required trip data:", tripData);
+      throw new Error(
+        `Missing required trip data: ${missingFields.join(", ")}`
+      );
     }
 
-    // Ensure meals data is defined
     if (!tripData.meals) {
       tripData.meals = {
         breakfast: { checked: false, value: "" },
         lunch: { checked: false, value: "" },
         dinner: { checked: false, value: "" },
+      };
+    } else {
+      tripData.meals = {
+        breakfast: { checked: true, value: tripData.meals.breakfast || "0" },
+        lunch: { checked: true, value: tripData.meals.lunch || "0" },
+        dinner: { checked: true, value: tripData.meals.dinner || "0" },
       };
     }
 
@@ -54,25 +78,28 @@ export const create = async (tripData: any) => {
       Number(tripData.flightCost || 0) +
       totalMealCost;
 
-    // return await prisma.trip.create({
-    //   data: {
-    //     title: capitalizeFirstLetter(tripData.title),
-    //     banner: tripData.banner,
-    //     destinationLocation: capitalizeFirstLetter(tripData.location),
-    //     longitude: 0,
-    //     latitude: 0,
-    //     images: tripData.images,
-    //     hotelName: tripData.accommodation,
-    //     accommodationDuration: Number(tripData.accommodationDuration),
-    //     hotelPrice: Number(tripData.accommodationPrice),
-    //     departureDate: tripData.flightDepartureDate,
-    //     returnDate: tripData.flightReturnDate,
-    //     flightCost: Number(tripData.flightCost),
-    //     mealCost: totalMealCost,
-    //     totalCost: totalCost,
-    //     userId: tripData.userId,
-    //   },
-    // });
+    return await prisma.trip.create({
+      data: {
+        title: capitalizeFirstLetter(tripData.title),
+        banner: tripData.banner || null,
+        images: tripData.images || [],
+        longitude: 0,
+        latitude: 0,
+        hotelName: tripData.accommodation,
+        departureLocation: capitalizeFirstLetter(tripData.departureLocation),
+        destinationLocation: capitalizeFirstLetter(
+          tripData.destinationLocation
+        ),
+        accommodationDuration: Number(tripData.accommodationDuration),
+        hotelPrice: Number(tripData.accommodationPrice),
+        departureDate: tripData.flightDepartureDate,
+        returnDate: tripData.flightReturnDate,
+        flightCost: Number(tripData.flightCost),
+        mealCost: totalMealCost,
+        totalCost: totalCost,
+        userId: tripData.userId,
+      },
+    });
   } catch (error: any) {
     console.error("Error in tripRepository:", error.message);
     throw new Error(`Error creating trip: ${error.message}`);
@@ -142,6 +169,8 @@ export const getAllTripsByUserId = async (userId: string) => {
     }
   }
 
+  console.log("trip", trips);
+
   return trips;
 };
 
@@ -202,4 +231,72 @@ export const createByIA = async (tripData: any) => {
       },
     },
   });
+};
+
+export const update = async (tripId: string, tripData: any) => {
+  try {
+    const requiredFields = [
+      "title",
+      "departureLocation",
+      "destinationLocation",
+      "accommodationName",
+      "accommodationDuration",
+      "accommodationPrice",
+      "flightDepartureDate",
+      "flightReturnDate",
+      "flightCost",
+      "userId",
+    ];
+
+    const missingFields = requiredFields.filter((field) => !tripData[field]);
+
+    if (missingFields.length > 0) {
+      console.error("Missing required trip data:", tripData);
+      throw new Error(
+        `Missing required trip data: ${missingFields.join(", ")}`
+      );
+    }
+
+    const meals = tripData.meals || {
+      breakfast: { checked: false, value: "0" },
+      lunch: { checked: false, value: "0" },
+      dinner: { checked: false, value: "0" },
+    };
+
+    const totalMealCost = Object.values(meals)
+      .map((meal: any) => Number(meal.value) || 0)
+      .reduce((a, b) => a + b, 0);
+
+    const totalCost =
+      Number(tripData.accommodationPrice || 0) +
+      Number(tripData.flightCost || 0) +
+      totalMealCost;
+
+    return await prisma.trip.update({
+      where: { id: tripId },
+      data: {
+        title: capitalizeFirstLetter(tripData.title),
+        banner: tripData.banner || null,
+        images: tripData.images || [],
+        longitude: 0,
+        latitude: 0,
+        hotelName: tripData.accommodationName,
+        departureLocation: capitalizeFirstLetter(tripData.departureLocation),
+        destinationLocation: capitalizeFirstLetter(
+          tripData.destinationLocation
+        ),
+        accommodationDuration: Number(tripData.accommodationDuration),
+        hotelPrice: Number(tripData.accommodationPrice),
+        departureDate: tripData.flightDepartureDate,
+        returnDate: tripData.flightReturnDate,
+        flightCost: Number(tripData.flightCost),
+        mealCost: totalMealCost,
+        totalCost: totalCost,
+        userId: tripData.userId,
+      },
+    });
+  } catch (error: any) {
+    console.error("Error in tripRepository:", error.message);
+    throw new Error(`Error updating trip: ${error.message}`);
+  }
 };

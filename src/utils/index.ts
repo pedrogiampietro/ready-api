@@ -1,6 +1,6 @@
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { r2 } from "../middlewares/clouflare";
+import { r2 } from "../middlewares/cloudflare";
 
 export const capitalizeFirstLetter = (string: string) => {
   return string
