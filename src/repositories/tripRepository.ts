@@ -28,7 +28,7 @@ export interface FrontendTrip {
   meals?: Meals;
   banner?: string;
   images?: string[];
-  [key: string]: any; // Adicionado para permitir acesso dinâmico
+  [key: string]: any;
 }
 
 export const create = async (tripData: any) => {
