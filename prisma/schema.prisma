@@ -12,6 +12,7 @@ model User {
   id         String   @id @default(uuid())
   email      String   @unique
   avatar_url String?
+  bucket_url String?
   password   String
   name       String
   trips      Trip[]

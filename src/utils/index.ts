@@ -1,4 +1,8 @@
-import { GetObjectCommand } from "@aws-sdk/client-s3";
+import {
+  DeleteObjectCommand,
+  GetObjectCommand,
+  S3Client,
+} from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { r2 } from "../middlewares/cloudflare";
 
@@ -21,4 +25,14 @@ export async function getSignedUrlForKey(key: any) {
   });
 
   return await getSignedUrl(r2, command, { expiresIn: 3600 });
+}
+
+export async function deleteFromS3(bucketName: string, key: string) {
+  const command = new DeleteObjectCommand({
+    Bucket: bucketName,
+    Key: key,
+  });
+
+  await r2.send(command);
+  console.log(`Deleted ${key} from ${bucketName}`);
 }
