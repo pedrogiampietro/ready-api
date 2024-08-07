@@ -109,7 +109,17 @@ export const create = async (tripData: any) => {
 export const getAll = async () => {
   const trips = await prisma.trip.findMany({
     include: {
-      reviews: true,
+      reviews: {
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              avatar_url: true,
+            },
+          },
+        },
+      },
       itineraries: true,
       restaurants: true,
     },
@@ -298,5 +308,17 @@ export const update = async (tripId: string, tripData: any) => {
   } catch (error: any) {
     console.error("Error in tripRepository:", error.message);
     throw new Error(`Error updating trip: ${error.message}`);
+  }
+};
+
+export const deleteById = async (tripId: string) => {
+  try {
+    await prisma.restaurant.deleteMany({ where: { tripId } });
+    await prisma.itinerary.deleteMany({ where: { tripId } });
+    await prisma.review.deleteMany({ where: { tripId } });
+    await prisma.trip.delete({ where: { id: tripId } });
+  } catch (error: any) {
+    console.error("Error in tripRepository:", error.message);
+    throw new Error(`Error deleting trip: ${error.message}`);
   }
 };

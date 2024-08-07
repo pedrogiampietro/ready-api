@@ -273,3 +273,14 @@ export const updateTrip = async (req: any, res: Response) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+export const deleteTrip = async (req: Request, res: Response) => {
+  try {
+    const tripId = req.params.id;
+    await tripService.deleteTrip(tripId);
+    res.status(204).send();
+  } catch (error: any) {
+    console.error("Error deleting trip:", error.message);
+    res.status(500).json({ error: error.message });
+  }
+};

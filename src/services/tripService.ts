@@ -37,3 +37,7 @@ export const createTripByIA = async (tripData: any) => {
 export const updateTrip = async (tripId: string, tripData: FrontendTrip) => {
   return await tripRepository.update(tripId, tripData);
 };
+
+export const deleteTrip = async (tripId: string) => {
+  return await tripRepository.deleteById(tripId);
+};

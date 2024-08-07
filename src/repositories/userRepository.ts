@@ -28,6 +28,7 @@ export const create = async (userData: User) => {
     data: newUser,
   };
 };
+
 export const findByCredentials = async (credentials: {
   email: string;
   password: string;
@@ -62,4 +63,24 @@ export const findByCredentials = async (credentials: {
     message: "Login bem sucedido.",
     data: user,
   };
+};
+
+export const update = async (userId: string, updateData: Partial<User>) => {
+  try {
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: updateData,
+    });
+    return {
+      success: true,
+      message: "Perfil atualizado com sucesso.",
+      data: updatedUser,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: "Erro ao atualizar perfil.",
+      data: null,
+    };
+  }
 };

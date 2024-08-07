@@ -23,5 +23,7 @@ router.put(
   ]),
   tripController.updateTrip
 );
+router.delete("/:id", tripController.deleteTrip);
+
 
 export default router;
