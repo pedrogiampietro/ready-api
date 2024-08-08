@@ -16,7 +16,7 @@ export const login = async (req: Request, res: Response) => {
   res.json(user);
 };
 
-export const updateProfile = async (req: any, res: Response) => {
+export const updateProfile = async (req: Request, res: Response) => {
   const { userId, name } = req.body;
 
   try {
@@ -30,7 +30,7 @@ export const updateProfile = async (req: any, res: Response) => {
     let avatarKey = null;
     let signedUrl = null;
     if (req.file && req.file.path) {
-      avatarKey = `avatars/${uuidv4()}`;
+      avatarKey = `avatars/${req.file.filename}`;
       await uploadToS3(req.file, process.env.BUCKET_NAME, avatarKey);
       signedUrl = await getSignedUrlForKey(avatarKey);
 

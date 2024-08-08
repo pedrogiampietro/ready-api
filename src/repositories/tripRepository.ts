@@ -74,7 +74,9 @@ export const create = async (tripData: any) => {
       .reduce((a, b) => a + b, 0);
 
     const totalCost =
-      Number(tripData.accommodationPrice || 0) +
+      Number(
+        tripData.accommodationPrice * tripData.accommodationDuration || 0
+      ) +
       Number(tripData.flightCost || 0) +
       totalMealCost;
 

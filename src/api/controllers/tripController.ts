@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import * as tripService from "../../services/tripService";
 import { uploadToS3 } from "../../middlewares/clouds3";
 import { randomUUID as uuidv4 } from "node:crypto";
+import { getSignedUrlForKey } from "../../utils";
 
 export const getTrip = async (req: Request, res: Response) => {
   try {
@@ -47,8 +48,6 @@ export const createTripByIA = async (req: Request, res: Response) => {
     },
     classLevel,
     budget,
-    travelStyle,
-    selectedItems,
     comfortableWithPublicTransport,
     departureLocation,
     destinationLocation,
@@ -56,25 +55,6 @@ export const createTripByIA = async (req: Request, res: Response) => {
     flightReturnDate,
     userId,
   } = req.body;
-
-  // console.log("Dados extraídos do req.body:", {
-  //   voo,
-  //   hospedagem,
-  //   restaurantes,
-  //   roteiro,
-  //   observacoes,
-  //   dicas_extras,
-  //   classLevel,
-  //   budget,
-  //   travelStyle,
-  //   selectedItems,
-  //   comfortableWithPublicTransport,
-  //   departureLocation,
-  //   destinationLocation,
-  //   flightDepartureDate,
-  //   flightReturnDate,
-  //   userId,
-  // });
 
   const flightCost = parseFloat(
     voo.preco.replace("R$ ", "").replace(".", "").replace(",", ".")
@@ -107,18 +87,6 @@ export const createTripByIA = async (req: Request, res: Response) => {
 
     totalCost = flightCost + hotelPrice * accommodationDuration;
   }
-
-  // console.log("Custos calculados:", {
-  //   flightCost,
-  //   hotelPrice,
-  //   accommodationDuration,
-  //   totalCost,
-  // });
-
-  // console.log("Datas serializadas:", {
-  //   flightDepartureDateSerealized,
-  //   flightReturnDateSerealized,
-  // });
 
   try {
     const newTrip = await tripService.createTripByIA({
@@ -214,6 +182,7 @@ export const updateTrip = async (req: any, res: Response) => {
     const tripId = req.params.id;
 
     let bannerKey = null;
+    let signedUrl = null;
     if (
       req.files &&
       req.files.banner &&
@@ -222,6 +191,7 @@ export const updateTrip = async (req: any, res: Response) => {
     ) {
       bannerKey = `banners/${uuidv4()}-${req.files.banner[0].originalname}`;
       await uploadToS3(req.files.banner[0], process.env.BUCKET_NAME, bannerKey);
+      signedUrl = await getSignedUrlForKey(bannerKey);
     }
 
     const imageKeys =
@@ -244,6 +214,7 @@ export const updateTrip = async (req: any, res: Response) => {
     const tripData = {
       ...req.body,
       banner: bannerKey,
+      banner_bucket: signedUrl,
       images: imageKeys,
       flightDepartureDate: req.body.flightDepartureDate
         ? new Date(req.body.flightDepartureDate).toISOString()

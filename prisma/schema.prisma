@@ -23,6 +23,7 @@ model Trip {
   id                             String       @id @default(uuid())
   title                          String
   banner                         String?
+  banner_bucket                  String?
   images                         String[]
   departureLocation              String
   destinationLocation            String
