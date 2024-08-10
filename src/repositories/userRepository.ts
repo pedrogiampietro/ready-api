@@ -28,6 +28,7 @@ export const create = async (userData: User) => {
     data: newUser,
   };
 };
+
 export const findByCredentials = async (credentials: {
   email: string;
   password: string;
@@ -62,4 +63,13 @@ export const findByCredentials = async (credentials: {
     message: "Login bem sucedido.",
     data: user,
   };
+};
+
+export const getUserPlan = async (userId: string) => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: { plan: true },
+  });
+
+  return user?.plan;
 };

@@ -102,3 +102,33 @@ export const findById = async (id: string) => {
 
   return trip;
 };
+
+export const countActiveTrips = async (userId: string): Promise<number> => {
+  return prisma.trip.count({
+    where: {
+      userId,
+      departureDate: {
+        lte: new Date(),
+      },
+      returnDate: {
+        gte: new Date(),
+      },
+    },
+  });
+};
+
+export const countImages = async (tripId: string): Promise<number> => {
+  const trip = await prisma.trip.findUnique({
+    where: { id: tripId },
+  });
+  return trip?.images.length || 0;
+};
+
+export const getUserPlanByTripId = async (tripId: string) => {
+  const trip = await prisma.trip.findUnique({
+    where: { id: tripId },
+    include: { user: true },
+  });
+
+  return trip?.user.planId;
+};

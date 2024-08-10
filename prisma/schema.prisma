@@ -14,6 +14,15 @@ model User {
   password String
   name     String
   trips    Trip[]
+  plan     Plan   @relation(fields: [planId], references: [id])
+  planId   String
+}
+
+model Plan {
+  id       String   @id @default(uuid())
+  name     String
+  features String[]
+  users    User[]
 }
 
 model Trip {
@@ -43,4 +52,9 @@ model Review {
   comment String?
   trip    Trip    @relation(fields: [tripId], references: [id])
   tripId  String
+}
+
+enum PlanType {
+  FREE
+  PRO
 }
