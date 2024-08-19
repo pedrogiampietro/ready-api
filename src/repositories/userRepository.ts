@@ -19,7 +19,14 @@ export const create = async (userData: User) => {
   const hashedPassword = await bcrypt.hash(userData.password, 10);
 
   const newUser = await prisma.user.create({
-    data: { ...userData, password: hashedPassword },
+    data: {
+      name: userData.name,
+      email: userData.email,
+      password: hashedPassword,
+      plan: {
+        connect: { id: "free-plan-id" },
+      },
+    },
   });
 
   return {
@@ -58,10 +65,17 @@ export const findByCredentials = async (credentials: {
     };
   }
 
+  const totalTrips = await prisma.trip.count({
+    where: { userId: user.id },
+  });
+
   return {
     success: true,
     message: "Login bem sucedido.",
-    data: user,
+    data: {
+      ...user,
+      totalTrips,
+    },
   };
 };
 
@@ -115,6 +129,7 @@ export const findById = async (userId: string) => {
       data: null,
     };
   }
+};
 
 export const getUserPlan = async (userId: string) => {
   const user = await prisma.user.findUnique({
@@ -123,5 +138,4 @@ export const getUserPlan = async (userId: string) => {
   });
 
   return user?.plan;
-
 };

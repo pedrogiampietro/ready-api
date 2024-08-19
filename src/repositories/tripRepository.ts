@@ -181,7 +181,7 @@ export const getAllTripsByUserId = async (userId: string) => {
     }
   }
 
-  console.log("trip", trips);
+  // console.log("trip", trips);
 
   return trips;
 };
@@ -323,6 +323,7 @@ export const deleteById = async (tripId: string) => {
     console.error("Error in tripRepository:", error.message);
     throw new Error(`Error deleting trip: ${error.message}`);
   }
+};
 
 export const countActiveTrips = async (userId: string): Promise<number> => {
   return prisma.trip.count({

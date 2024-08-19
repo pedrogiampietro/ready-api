@@ -15,15 +15,11 @@ model User {
   bucket_url String?
   password   String
   name       String
-  trips      Trip[]
   Review     Review[]
-  id       String @id @default(uuid())
-  email    String @unique
-  password String
-  name     String
-  trips    Trip[]
-  plan     Plan   @relation(fields: [planId], references: [id])
-  planId   String
+  trips      Trip[]
+  plan       Plan     @relation(fields: [planId], references: [id])
+  planId     String
+  created_at DateTime @default(now())
 }
 
 model Plan {

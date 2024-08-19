@@ -95,27 +95,27 @@ export const generateTravel = async (data: any): Promise<object> => {
 };
 
 export const generateEmbellishTitle = async (data: any): Promise<string> => {
-  console.log("generateEmbellishTitle - Start");
+  // console.log("generateEmbellishTitle - Start");
 
   try {
     const prompt = `Por favor melhore o meu titulo: ${data.title} iremos utilizar ele para salvar o nosso planejamento de viagem, de uma melhorada para deixar mais limpo, atrativo e compreensivel`;
-    console.log("Generated Prompt:", prompt);
+    // console.log("Generated Prompt:", prompt);
 
     const result = await googleAIClient.generateContent(prompt);
-    console.log("API Result:", result);
+    // console.log("API Result:", result);
 
     const response = await result.response;
     const text = await response.text();
-    console.log("Response Text:", text);
+    // console.log("Response Text:", text);
 
     const suggestionsAndTips = text.split(
       "\n\n**Dicas para um título ainda melhor:**\n\n"
     );
-    console.log("Suggestions and Tips:", suggestionsAndTips);
+    // console.log("Suggestions and Tips:", suggestionsAndTips);
 
     if (suggestionsAndTips.length > 0) {
       const categories = suggestionsAndTips[0].split("\n\n");
-      console.log("Categories:", categories);
+      // console.log("Categories:", categories);
 
       // Filter and clean titles
       const validTitles = categories
@@ -125,12 +125,12 @@ export const generateEmbellishTitle = async (data: any): Promise<string> => {
           (line) => line.trim().startsWith("* **") && line.trim().endsWith("**")
         )
         .map((title) => title.replace(/^\*\*\s*\*\*|\*\*\s*\*\*$/g, "").trim());
-      console.log("Valid Titles:", validTitles);
+      // console.log("Valid Titles:", validTitles);
 
       if (validTitles.length > 0) {
         const randomTitle =
           validTitles[Math.floor(Math.random() * validTitles.length)];
-        console.log("Random Title:", randomTitle);
+        // console.log("Random Title:", randomTitle);
         return randomTitle;
       } else {
         throw new Error("Não foram encontradas sugestões de títulos válidos");
@@ -142,6 +142,6 @@ export const generateEmbellishTitle = async (data: any): Promise<string> => {
     console.error("Erro ao chamar a API do Google:", error);
     throw new Error("Erro ao chamar a API do Google");
   } finally {
-    console.log("generateEmbellishTitle - End");
+    // console.log("generateEmbellishTitle - End");
   }
 };

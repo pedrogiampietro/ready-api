@@ -235,7 +235,7 @@ export const updateTrip = async (req: any, res: Response) => {
       },
     };
 
-    console.log("Trip Data to Update:", tripData);
+    // console.log("Trip Data to Update:", tripData);
 
     const trip = await tripService.updateTrip(tripId, tripData);
     res.status(200).json(trip);

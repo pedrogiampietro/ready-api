@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import * as userService from "../../services/userService";
 import { uploadToS3 } from "../../middlewares/clouds3";
 import { deleteFromS3, getSignedUrlForKey } from "../../utils";
-import { randomUUID as uuidv4 } from "node:crypto";
 import path from "node:path";
 import fs from "node:fs";
 
@@ -35,24 +34,29 @@ export const updateProfile = async (req: Request, res: Response) => {
       signedUrl = await getSignedUrlForKey(avatarKey);
 
       if (user?.data?.avatar_url) {
-        await deleteFromS3(
-          process.env.BUCKET_NAME as string,
-          user.data.avatar_url
-        );
-      }
+        try {
+          await deleteFromS3(
+            process.env.BUCKET_NAME as string,
+            user.data.avatar_url
+          );
 
-      const oldAvatarFilename = path.basename(user?.data?.avatar_url as string);
-      const oldAvatarPath = path.join(
-        __dirname,
-        "..",
-        "..",
-        "uploads",
-        "avatars",
-        oldAvatarFilename
-      );
+          const oldAvatarPath = path.resolve(
+            __dirname,
+            "..",
+            "..",
+            "..",
+            "tmp",
+            user.data.avatar_url
+          );
 
-      if (fs.existsSync(oldAvatarPath)) {
-        fs.unlinkSync(oldAvatarPath);
+          if (fs.existsSync(oldAvatarPath)) {
+            fs.unlinkSync(oldAvatarPath);
+          } else {
+            console.log(`Local file ${oldAvatarPath} not found`);
+          }
+        } catch (deleteError) {
+          console.error("Error deleting old avatar:", deleteError);
+        }
       }
     }
 
