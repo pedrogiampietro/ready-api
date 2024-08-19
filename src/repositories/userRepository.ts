@@ -115,4 +115,13 @@ export const findById = async (userId: string) => {
       data: null,
     };
   }
+
+export const getUserPlan = async (userId: string) => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: { plan: true },
+  });
+
+  return user?.plan;
+
 };

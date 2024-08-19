@@ -17,6 +17,20 @@ model User {
   name       String
   trips      Trip[]
   Review     Review[]
+  id       String @id @default(uuid())
+  email    String @unique
+  password String
+  name     String
+  trips    Trip[]
+  plan     Plan   @relation(fields: [planId], references: [id])
+  planId   String
+}
+
+model Plan {
+  id       String   @id @default(uuid())
+  name     String
+  features String[]
+  users    User[]
 }
 
 model Trip {
@@ -77,4 +91,9 @@ model Review {
   tripId  String
   user    User   @relation(fields: [userId], references: [id])
   userId  String
+}
+
+enum PlanType {
+  FREE
+  PRO
 }
