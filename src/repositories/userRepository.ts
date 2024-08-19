@@ -65,6 +65,57 @@ export const findByCredentials = async (credentials: {
   };
 };
 
+export const update = async (userId: string, updateData: any) => {
+  try {
+    const { userId: _, ...validData } = updateData;
+
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: validData,
+    });
+
+    return {
+      success: true,
+      message: "Perfil atualizado com sucesso.",
+      data: updatedUser,
+    };
+  } catch (error) {
+    console.error("Database error:", error);
+    return {
+      success: false,
+      message: "Erro ao atualizar perfil.",
+      data: null,
+    };
+  }
+};
+
+export const findById = async (userId: string) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      return {
+        success: false,
+        message: "Usuário não encontrado.",
+        data: null,
+      };
+    }
+
+    return {
+      success: true,
+      data: user,
+    };
+  } catch (error) {
+    console.error("Database error:", error);
+    return {
+      success: false,
+      message: "Erro ao buscar usuário.",
+      data: null,
+    };
+  }
+
 export const getUserPlan = async (userId: string) => {
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -72,4 +123,5 @@ export const getUserPlan = async (userId: string) => {
   });
 
   return user?.plan;
+
 };

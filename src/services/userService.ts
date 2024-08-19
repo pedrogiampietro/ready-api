@@ -11,3 +11,14 @@ export const login = async (credentials: {
 }) => {
   return await userRepository.findByCredentials(credentials);
 };
+
+export const updateProfile = async (
+  userId: string,
+  updateData: Partial<User>
+) => {
+  return await userRepository.update(userId, updateData);
+};
+
+export const getUserById = async (userId: string) => {
+  return await userRepository.findById(userId);
+};
