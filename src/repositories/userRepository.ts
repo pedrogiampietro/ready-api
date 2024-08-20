@@ -1,4 +1,5 @@
 import { PrismaClient, User } from "@prisma/client";
+import { generateJwt, generateRefreshJwt } from "../utils/jwtHelper";
 import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
@@ -65,17 +66,24 @@ export const findByCredentials = async (credentials: {
     };
   }
 
+  const token = generateJwt({ id: user.id });
+  const refreshToken = generateRefreshJwt({
+    id: user.id,
+  });
+
   const totalTrips = await prisma.trip.count({
     where: { userId: user.id },
   });
 
   return {
     success: true,
-    message: "Login bem sucedido.",
+    message: "Login realizado com sucesso!",
     data: {
       ...user,
       totalTrips,
     },
+    token,
+    refreshToken,
   };
 };
 

@@ -9,7 +9,7 @@ const options: SignOptions = { expiresIn: "30 minutes" };
 const refreshOptions: SignOptions = { expiresIn: "30 days" };
 
 interface Payload extends JwtPayload {
-  id: number;
+  id: string;
 }
 
 const generateJwt = (payload: Payload): string => {
