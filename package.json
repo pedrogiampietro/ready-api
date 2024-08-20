@@ -5,7 +5,8 @@
   "scripts": {
     "start": "node dist/src/server.js",
     "watch": "tsc -w",
-    "build": "tsc && prisma generate && ts-node prisma/seed.ts",
+    "build": "tsc",
+    "prisma:generate": "prisma generate",
     "railway": "nodemon dist/index.js",
     "dev": "tsnd --exit-child src/server.ts",
     "create:seeds": "ts-node prisma/seed.ts",

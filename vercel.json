@@ -3,10 +3,7 @@
   "builds": [
     {
       "src": "src/server.ts",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": "node_modules/.prisma/**"
-      }
+      "use": "@vercel/node"
     }
   ],
   "routes": [
@@ -15,9 +12,5 @@
       "dest": "src/server.ts"
     }
   ],
-  "build": {
-    "env": {
-      "NEXT_PUBLIC_PRISMA_GENERATE": "true"
-    }
-  }
+  "buildCommand": "npm run build && npx prisma generate"
 }
