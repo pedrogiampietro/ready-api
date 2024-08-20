@@ -3,7 +3,10 @@
   "builds": [
     {
       "src": "src/server.ts",
-      "use": "@vercel/node"
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": "node_modules/.prisma/**"
+      }
     }
   ],
   "routes": [
@@ -11,5 +14,10 @@
       "src": "(.*)",
       "dest": "src/server.ts"
     }
-  ]
+  ],
+  "build": {
+    "env": {
+      "NEXT_PUBLIC_PRISMA_GENERATE": "true"
+    }
+  }
 }
