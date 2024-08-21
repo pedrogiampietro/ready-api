@@ -53,13 +53,9 @@ export const getAllTripsByUserId = async (userId: string) => {
 
 export const createTripByIA = async (tripData: any) => {
   try {
-    // console.log("Dados recebidos no serviço:", tripData);
-
     const newTrip = await tripRepository.createByIA({
       ...tripData,
     });
-
-    // console.log("Viagem criada no banco de dados:", newTrip);
 
     return newTrip;
   } catch (error) {
@@ -74,4 +70,27 @@ export const updateTrip = async (tripId: string, tripData: FrontendTrip) => {
 
 export const deleteTrip = async (tripId: string) => {
   return await tripRepository.deleteById(tripId);
+};
+
+export const addRestaurant = async (
+  tripId: string,
+  restaurantData: { name: string; url: string; budget: string }
+) => {
+  return await tripRepository.addRestaurantToTrip(tripId, restaurantData);
+};
+
+export const addItinerary = async (
+  tripId: string,
+  itineraryData: {
+    date: Date;
+    activity: string;
+    description: string;
+    url: string;
+  }
+) => {
+  return await tripRepository.addItineraryToTrip(tripId, itineraryData);
+};
+
+export const getTripDetails = async (tripId: string) => {
+  return await tripRepository.findTripById(tripId);
 };

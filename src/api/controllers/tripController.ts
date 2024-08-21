@@ -255,3 +255,47 @@ export const deleteTrip = async (req: Request, res: Response) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+export const addRestaurant = async (req: Request, res: Response) => {
+  const { tripId } = req.params;
+  const { name, url, budget } = req.body;
+
+  try {
+    const newRestaurant = await tripService.addRestaurant(tripId, {
+      name,
+      url,
+      budget,
+    });
+    res.status(201).json(newRestaurant);
+  } catch (error: any) {
+    res.status(500).json({ error: "Failed to add restaurant to trip" });
+  }
+};
+
+export const addItinerary = async (req: Request, res: Response) => {
+  const { tripId } = req.params;
+  const { date, activity, description, url } = req.body;
+
+  try {
+    const newItinerary = await tripService.addItinerary(tripId, {
+      date,
+      activity,
+      description,
+      url,
+    });
+    res.status(201).json(newItinerary);
+  } catch (error: any) {
+    res.status(500).json({ error: "Failed to add itinerary to trip" });
+  }
+};
+
+export const getTripDetails = async (req: Request, res: Response) => {
+  const { tripId } = req.params;
+
+  try {
+    const tripDetails = await tripService.getTripDetails(tripId);
+    res.status(200).json(tripDetails);
+  } catch (error: any) {
+    res.status(404).json({ error: "Trip not found" });
+  }
+};

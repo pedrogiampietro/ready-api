@@ -31,5 +31,16 @@ router.put(
   tripController.updateTrip
 );
 router.delete("/:id", authenticateJWT, tripController.deleteTrip);
+router.post(
+  "/:tripId/restaurants",
+  authenticateJWT,
+  tripController.addRestaurant
+);
+router.post(
+  "/:tripId/itineraries",
+  authenticateJWT,
+  tripController.addItinerary
+);
+router.get("/:tripId", authenticateJWT, tripController.getTripDetails);
 
 export default router;

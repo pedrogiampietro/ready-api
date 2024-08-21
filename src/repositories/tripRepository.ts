@@ -354,3 +354,100 @@ export const getUserPlanByTripId = async (tripId: string) => {
 
   return trip?.user.planId;
 };
+
+export const addRestaurantToTrip = async (
+  tripId: string,
+  restaurantData: { name: string; url: string; budget: string }
+) => {
+  try {
+    const requiredFields: Array<keyof typeof restaurantData> = [
+      "name",
+      "url",
+      "budget",
+    ];
+
+    const missingFields = requiredFields.filter(
+      (field) => !restaurantData[field]
+    );
+
+    if (missingFields.length > 0) {
+      console.error("Missing required restaurant data:", restaurantData);
+      throw new Error(
+        `Missing required restaurant data: ${missingFields.join(", ")}`
+      );
+    }
+
+    return await prisma.restaurant.create({
+      data: {
+        name: restaurantData.name,
+        url: restaurantData.url,
+        budget: restaurantData.budget,
+        trip: {
+          connect: { id: tripId },
+        },
+      },
+    });
+  } catch (error: any) {
+    console.error("Error in addRestaurantToTrip:", error.message);
+    throw new Error(`Error adding restaurant to trip: ${error.message}`);
+  }
+};
+
+export const addItineraryToTrip = async (
+  tripId: string,
+  itineraryData: {
+    date: Date;
+    activity: string;
+    description: string;
+    url: string;
+  }
+) => {
+  try {
+    const requiredFields: Array<keyof typeof itineraryData> = [
+      "date",
+      "activity",
+      "description",
+    ];
+
+    const missingFields = requiredFields.filter(
+      (field) => !itineraryData[field]
+    );
+
+    if (missingFields.length > 0) {
+      console.error("Missing required itinerary data:", itineraryData);
+      throw new Error(
+        `Missing required itinerary data: ${missingFields.join(", ")}`
+      );
+    }
+
+    return await prisma.itinerary.create({
+      data: {
+        date: itineraryData.date,
+        activity: itineraryData.activity,
+        description: itineraryData.description,
+        url: itineraryData.url || "",
+        trip: {
+          connect: { id: tripId },
+        },
+      },
+    });
+  } catch (error: any) {
+    console.error("Error in addItineraryToTrip:", error.message);
+    throw new Error(`Error adding itinerary to trip: ${error.message}`);
+  }
+};
+
+export const findTripById = async (tripId: string) => {
+  try {
+    return await prisma.trip.findUnique({
+      where: { id: tripId },
+      include: {
+        restaurants: true,
+        itineraries: true,
+      },
+    });
+  } catch (error: any) {
+    console.error("Error in findTripById:", error.message);
+    throw new Error(`Error finding trip by id: ${error.message}`);
+  }
+};
