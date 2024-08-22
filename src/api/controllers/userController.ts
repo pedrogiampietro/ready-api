@@ -88,3 +88,36 @@ export const updateProfile = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const forgotPassword = async (req: Request, res: Response) => {
+  const { email } = req.body;
+
+  try {
+    const response = await userService.forgotPassword(email);
+    return res.status(200).json(response);
+  } catch (error: any) {
+    return res.status(400).json({ success: false, message: error.message });
+  }
+};
+
+export const verifyResetPasswordCode = async (req: Request, res: Response) => {
+  const { email, code } = req.body;
+
+  try {
+    const response = await userService.verifyResetPasswordCode(email, code);
+    return res.status(200).json(response);
+  } catch (error: any) {
+    return res.status(400).json({ success: false, message: error.message });
+  }
+};
+
+export const resetPassword = async (req: Request, res: Response) => {
+  const { email, code, newPassword } = req.body;
+
+  try {
+    const response = await userService.resetPassword(email, code, newPassword);
+    return res.status(200).json(response);
+  } catch (error: any) {
+    return res.status(400).json({ success: false, message: error.message });
+  }
+};

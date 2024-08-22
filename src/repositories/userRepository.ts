@@ -1,5 +1,6 @@
 import { PrismaClient, User } from "@prisma/client";
 import { generateJwt, generateRefreshJwt } from "../utils/jwtHelper";
+import { addMinutes } from "date-fns";
 import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
@@ -146,4 +147,52 @@ export const getUserPlan = async (userId: string) => {
   });
 
   return user?.plan;
+};
+
+export const findByEmail = async (email: string) => {
+  return await prisma.user.findUnique({ where: { email } });
+};
+
+export const setResetPasswordCode = async (user: User) => {
+  const resetCode = Math.floor(100000 + Math.random() * 900000).toString(); // Gera um código de 6 dígitos
+  const hashedCode = await bcrypt.hash(resetCode, 10);
+
+  await prisma.user.update({
+    where: { email: user.email },
+    data: {
+      resetPasswordToken: hashedCode,
+      resetPasswordExpiresAt: addMinutes(new Date(), 10), // Código válido por 10 minutos
+    },
+  });
+
+  return resetCode;
+};
+
+export const verifyResetPasswordCode = async (email: string, code: string) => {
+  const user = await prisma.user.findUnique({ where: { email } });
+
+  if (!user || !user.resetPasswordToken || !user.resetPasswordExpiresAt) {
+    return false;
+  }
+
+  const isCodeValid = await bcrypt.compare(code, user.resetPasswordToken);
+
+  if (!isCodeValid || user.resetPasswordExpiresAt < new Date()) {
+    return false;
+  }
+
+  return user;
+};
+
+export const updatePassword = async (email: string, newPassword: string) => {
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+  return await prisma.user.update({
+    where: { email },
+    data: {
+      password: hashedPassword,
+      resetPasswordToken: null,
+      resetPasswordExpiresAt: null,
+    },
+  });
 };
