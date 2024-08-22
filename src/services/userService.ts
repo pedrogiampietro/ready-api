@@ -32,10 +32,82 @@ export const forgotPassword = async (email: string) => {
 
   const resetCode = await userRepository.setResetPasswordCode(user);
 
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f4f4f4;
+                color: #333;
+                margin: 0;
+                padding: 0;
+            }
+            .container {
+                max-width: 600px;
+                margin: 20px auto;
+                background-color: #ffffff;
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+            .header {
+                font-size: 24px;
+                font-weight: bold;
+                color: #FF7029;
+                text-align: center;
+                margin-bottom: 20px;
+            }
+            .content {
+                font-size: 18px;
+                line-height: 1.6;
+            }
+            .code {
+                font-size: 24px;
+                font-weight: bold;
+                text-align: center;
+                margin: 20px 0;
+                padding: 10px;
+                background-color: #f8f8f8;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+            }
+            .footer {
+                text-align: center;
+                font-size: 14px;
+                color: #777;
+                margin-top: 20px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                Ready Travel App
+            </div>
+            <div class="content">
+                <p>Olá,</p>
+                <p>Você solicitou a redefinição da sua senha. Use o código abaixo para continuar o processo:</p>
+                <div class="code">
+                    ${resetCode}
+                </div>
+                <p>Se você não solicitou essa alteração, por favor ignore este e-mail.</p>
+            </div>
+            <div class="footer">
+                &copy; 2024 Ready Travel App. Todos os direitos reservados.
+            </div>
+        </div>
+    </body>
+    </html>
+  `;
+
   await sendEmail(
     email,
     "Recuperação de Senha",
-    `Use este código para redefinir sua senha: ${resetCode}`
+    `Use este código para redefinir sua senha: ${resetCode}`,
+    htmlContent
   );
 
   return {
