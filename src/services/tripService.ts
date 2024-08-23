@@ -85,7 +85,8 @@ export const getTripDetails = async (tripId: string) => {
 };
 
 export const canCreateTrip = async (userId: string): Promise<boolean> => {
-  const activeTrips = await tripRepository.countActiveTrips(userId);
+  const activeTrips = await tripRepository.countTripsGeneratedByAI(userId);
+
   const userPlan = await getUserPlan(userId);
 
   if (userPlan?.name === "FREE" && activeTrips >= 1) {

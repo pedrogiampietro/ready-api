@@ -60,6 +60,7 @@ model Trip {
   reviews                        Review[]
   observacoes                    String[]
   dicasExtras                    String[]     @map("dicas_extras")
+  generatedByAI                  Boolean      @default(false)
 }
 
 model Restaurant {

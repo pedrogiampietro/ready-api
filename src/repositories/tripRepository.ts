@@ -181,8 +181,6 @@ export const getAllTripsByUserId = async (userId: string) => {
     }
   }
 
-  // console.log("trip", trips);
-
   return trips;
 };
 
@@ -192,8 +190,22 @@ export const createByIA = async (tripData: any) => {
     roteiro,
     observacoes,
     dicas_extras,
+    userId,
     ...restOfTripData
   } = tripData;
+
+  // Verificar se o usuário já tem uma viagem gerada por IA
+  const userPlan = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { plan: true },
+  });
+
+  if (userPlan?.plan.name === "FREE") {
+    const aiTripCount = await countTripsGeneratedByAI(userId);
+    if (aiTripCount > 0) {
+      throw new Error("User cannot create more trips with AI in FREE plan");
+    }
+  }
 
   const restaurantesData = restaurantes
     ?.map((categoria: any) => {
@@ -235,12 +247,18 @@ export const createByIA = async (tripData: any) => {
       ...restOfTripData,
       observacoes,
       dicasExtras: dicas_extras,
+      user: {
+        connect: {
+          id: userId,
+        },
+      },
       restaurants: {
         create: restaurantesData,
       },
       itineraries: {
         create: roteiroData,
       },
+      generatedByAI: true,
     },
   });
 };
@@ -325,16 +343,13 @@ export const deleteById = async (tripId: string) => {
   }
 };
 
-export const countActiveTrips = async (userId: string): Promise<number> => {
+export const countTripsGeneratedByAI = async (
+  userId: string
+): Promise<number> => {
   return prisma.trip.count({
     where: {
       userId,
-      departureDate: {
-        lte: new Date(),
-      },
-      returnDate: {
-        gte: new Date(),
-      },
+      generatedByAI: true,
     },
   });
 };
