@@ -12,6 +12,7 @@ import { rateLimit } from "express-rate-limit";
 
 const app = express();
 
+app.set("trust proxy", true);
 app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: false }));
