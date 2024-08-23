@@ -12,7 +12,6 @@ import { rateLimit } from "express-rate-limit";
 
 const app = express();
 
-app.set("trust proxy", true);
 app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: false }));
@@ -48,14 +47,14 @@ app.use((_: any, response: Response, next: NextFunction) => {
   return next();
 });
 
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  limit: 30, // Limit each IP to 30 requests per `window` (here, per 15 minutes).
-  standardHeaders: "draft-7", // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
-  legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
-});
+// const limiter = rateLimit({
+//   windowMs: 15 * 60 * 1000, // 15 minutes
+//   limit: 30, // Limit each IP to 30 requests per `window` (here, per 15 minutes).
+//   standardHeaders: "draft-7", // draft-6: `RateLimit-*` headers; draft-7: combined `RateLimit` header
+//   legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
+// });
 
-app.use(limiter);
+// app.use(limiter);
 
 app.use("/users", userRoutes);
 app.use("/trips", tripRoutes);
