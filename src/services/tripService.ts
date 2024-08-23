@@ -33,12 +33,15 @@ export const getAllTripsByUserId = async (userId: string) => {
 };
 
 export const createTripByIA = async (tripData: any) => {
-  const isCanCreateTrip = await canCreateTrip(tripData.userId);
+  const { canCreate, message } = await canCreateTrip(tripData.userId);
 
-  if (!isCanCreateTrip) {
-    throw new Error(
-      "Você atingiu o número máximo de viagens ativas para o seu plano."
-    );
+  if (!canCreate) {
+    return {
+      success: false,
+      message:
+        message ||
+        "Você atingiu o número máximo de viagens ativas para o seu plano.",
+    };
   }
 
   try {
@@ -46,10 +49,16 @@ export const createTripByIA = async (tripData: any) => {
       ...tripData,
     });
 
-    return newTrip;
+    return {
+      success: true,
+      trip: newTrip,
+    };
   } catch (error) {
     console.error("Error creating trip: ", error);
-    throw new Error("An error occurred while creating the trip.");
+    return {
+      success: false,
+      message: "Ocorreu um erro ao criar a viagem.",
+    };
   }
 };
 
@@ -84,13 +93,19 @@ export const getTripDetails = async (tripId: string) => {
   return await tripRepository.findTripById(tripId);
 };
 
-export const canCreateTrip = async (userId: string): Promise<boolean> => {
+export const canCreateTrip = async (
+  userId: string
+): Promise<{ canCreate: boolean; message?: string }> => {
   const activeTrips = await tripRepository.countActiveTrips(userId);
   const userPlan = await getUserPlan(userId);
 
   if (userPlan?.name === "FREE" && activeTrips >= 1) {
-    return false;
+    return {
+      canCreate: false,
+      message:
+        "Você já atingiu o limite de 1 viagem ativa para o plano gratuito. Faça upgrade para criar mais viagens.",
+    };
   }
 
-  return true;
+  return { canCreate: true };
 };
