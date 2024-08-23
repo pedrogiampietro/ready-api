@@ -214,13 +214,13 @@ export const createByIA = async (tripData: any) => {
   const startDate = new Date(restOfTripData.departureDate) as any;
   const endDate = new Date(restOfTripData.returnDate) as any;
   const totalDays =
-    Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1; // Número total de dias
+    Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
 
   const roteiroData = roteiro
     ?.map((dia: any, index: number) => {
       if (index < totalDays) {
         return {
-          date: addDays(startDate, index), // Ajusta a data para cada dia do roteiro
+          date: addDays(startDate, index),
           activity: `Dia ${dia.dia}`,
           description: dia.atividades.join(", "),
           url: "",

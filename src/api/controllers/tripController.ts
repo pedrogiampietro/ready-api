@@ -146,7 +146,6 @@ export const createTrip = async (req: any, res: Response) => {
         )
       : [];
 
-    // Inicializar meals se não estiver presente no corpo da requisição
     const meals = req.body.meals || {
       breakfast: "0",
       lunch: "0",

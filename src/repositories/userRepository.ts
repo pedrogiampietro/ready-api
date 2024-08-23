@@ -154,14 +154,14 @@ export const findByEmail = async (email: string) => {
 };
 
 export const setResetPasswordCode = async (user: User) => {
-  const resetCode = Math.floor(100000 + Math.random() * 900000).toString(); // Gera um código de 6 dígitos
+  const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
   const hashedCode = await bcrypt.hash(resetCode, 10);
 
   await prisma.user.update({
     where: { email: user.email },
     data: {
       resetPasswordToken: hashedCode,
-      resetPasswordExpiresAt: addMinutes(new Date(), 10), // Código válido por 10 minutos
+      resetPasswordExpiresAt: addMinutes(new Date(), 10),
     },
   });
 
