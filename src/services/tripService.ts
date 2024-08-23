@@ -99,7 +99,15 @@ export const canCreateTrip = async (
   const activeTrips = await tripRepository.countActiveTrips(userId);
   const userPlan = await getUserPlan(userId);
 
-  if (userPlan?.name === "FREE" && activeTrips >= 1) {
+  if (!userPlan) {
+    return {
+      canCreate: false,
+      message:
+        "Você não possui um plano ativo. Por favor, faça upgrade para criar viagens.",
+    };
+  }
+
+  if (userPlan.name === "FREE" && activeTrips >= 1) {
     return {
       canCreate: false,
       message:
