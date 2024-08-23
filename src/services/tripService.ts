@@ -33,15 +33,12 @@ export const getAllTripsByUserId = async (userId: string) => {
 };
 
 export const createTripByIA = async (tripData: any) => {
-  const { canCreate, message } = await canCreateTrip(tripData.userId);
+  const isCanCreateTrip = await canCreateTrip(tripData.userId);
 
-  if (!canCreate) {
-    return {
-      success: false,
-      message:
-        message ||
-        "Você atingiu o número máximo de viagens ativas para o seu plano.",
-    };
+  if (!isCanCreateTrip) {
+    throw new Error(
+      "Você atingiu o número máximo de viagens ativas para o seu plano."
+    );
   }
 
   try {
@@ -49,16 +46,10 @@ export const createTripByIA = async (tripData: any) => {
       ...tripData,
     });
 
-    return {
-      success: true,
-      trip: newTrip,
-    };
+    return newTrip;
   } catch (error) {
     console.error("Error creating trip: ", error);
-    return {
-      success: false,
-      message: "Ocorreu um erro ao criar a viagem.",
-    };
+    throw new Error("An error occurred while creating the trip.");
   }
 };
 
@@ -93,27 +84,13 @@ export const getTripDetails = async (tripId: string) => {
   return await tripRepository.findTripById(tripId);
 };
 
-export const canCreateTrip = async (
-  userId: string
-): Promise<{ canCreate: boolean; message?: string }> => {
+export const canCreateTrip = async (userId: string): Promise<boolean> => {
   const activeTrips = await tripRepository.countActiveTrips(userId);
   const userPlan = await getUserPlan(userId);
 
-  if (!userPlan) {
-    return {
-      canCreate: false,
-      message:
-        "Você não possui um plano ativo. Por favor, faça upgrade para criar viagens.",
-    };
+  if (userPlan?.name === "FREE" && activeTrips >= 1) {
+    return false;
   }
 
-  if (userPlan.name === "FREE" && activeTrips >= 1) {
-    return {
-      canCreate: false,
-      message:
-        "Você já atingiu o limite de 1 viagem ativa para o plano gratuito. Faça upgrade para criar mais viagens.",
-    };
-  }
-
-  return { canCreate: true };
+  return true;
 };
