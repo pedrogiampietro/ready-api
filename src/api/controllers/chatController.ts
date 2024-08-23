@@ -6,11 +6,7 @@ import {
 import { canCreateTrip } from "../../services/tripService";
 
 export const chat = async (req: Request, res: Response) => {
-  const { userId, classLevel, budget, travelStyle } = req.body;
-
-  if (!userId || !classLevel || !budget || !travelStyle) {
-    return res.status(400).json({ error: "Missing required fields" });
-  }
+  const { userId } = req.body;
 
   try {
     const canCreate = await canCreateTrip(userId);
