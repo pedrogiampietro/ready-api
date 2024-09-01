@@ -5,7 +5,7 @@ const tokenPrivateKey = process.env.JWT_TOKEN_PRIVATE_KEY as string;
 const refreshTokenPrivateKey = process.env
   .JWT_REFRESH_TOKEN_PRIVATE_KEY as string;
 
-const options: SignOptions = { expiresIn: "30 minutes" };
+const options: SignOptions = { expiresIn: "7 days" };
 const refreshOptions: SignOptions = { expiresIn: "30 days" };
 
 interface Payload extends JwtPayload {
