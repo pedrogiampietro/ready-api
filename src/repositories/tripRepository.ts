@@ -511,7 +511,7 @@ export const getPopularDestinations = async () => {
           from: details?.departureLocation,
           totalCost: details?.totalCost,
           banner_bucket: details?.banner_bucket,
-          rating: details?.reviews,
+          rating: details?.reviews[0]?.rating || 0,
           count: destination._count.destinationLocation,
         };
       })
