@@ -61,6 +61,7 @@ model Trip {
   observacoes                    String[]
   dicasExtras                    String[]     @map("dicas_extras")
   generatedByAI                  Boolean      @default(false)
+  createdAt                      DateTime     @default(now())
 }
 
 model Restaurant {

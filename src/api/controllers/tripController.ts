@@ -17,8 +17,6 @@ export const getAllTrip = async (req: Request, res: Response) => {
   try {
     const trip = await tripService.getAllTrip();
 
-    // console.log("trip", trip);
-
     res.status(200).json(trip);
   } catch (error: any) {
     res.status(500).json({ error: error.message });

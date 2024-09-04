@@ -125,6 +125,9 @@ export const getAll = async () => {
       itineraries: true,
       restaurants: true,
     },
+    orderBy: {
+      createdAt: "desc",
+    },
   });
 
   for (const trip of trips) {
