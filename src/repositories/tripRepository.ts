@@ -486,13 +486,30 @@ export const getPopularDestinations = async () => {
       take: 10,
     });
 
-    return popularDestinations.map((destination: any) => ({
-      id: destination.id,
-      location: destination.destinationLocation,
-      from: destination.departureLocation,
-      totalCost: destination.totalCost,
-      count: destination._count.destinationLocation,
-    }));
+    const destinationDetails = await Promise.all(
+      popularDestinations.map(async (destination: any) => {
+        const details = await prisma.trip.findFirst({
+          where: {
+            destinationLocation: destination.destinationLocation,
+          },
+          select: {
+            id: true,
+            departureLocation: true,
+            totalCost: true,
+          },
+        });
+
+        return {
+          id: details?.id,
+          location: destination.destinationLocation,
+          from: details?.departureLocation,
+          totalCost: details?.totalCost,
+          count: destination._count.destinationLocation,
+        };
+      })
+    );
+
+    return destinationDetails;
   } catch (error: any) {
     console.error("Error in getPopularDestinations:", error.message);
     throw new Error(`Error fetching popular destinations: ${error.message}`);
