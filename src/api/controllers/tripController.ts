@@ -127,7 +127,7 @@ export const createTripByIA = async (req: Request, res: Response) => {
 export const createTrip = async (req: any, res: Response) => {
   try {
     let bannerKey = null;
-    if (req.files.banner && req.files.banner[0] && req.files.banner[0].path) {
+    if (req.files.banner && req.files.banner[0] && req.files.banner[0].buffer) {
       bannerKey = `banners/${uuidv4()}-${req.files.banner[0].originalname}`;
       await uploadToS3(req.files.banner[0], process.env.BUCKET_NAME, bannerKey);
     }
@@ -136,7 +136,7 @@ export const createTrip = async (req: any, res: Response) => {
       ? await Promise.all(
           req.files.images
             .map(async (file: any) => {
-              if (file.path) {
+              if (file.buffer) {
                 const key = `images/${uuidv4()}-${file.originalname}`;
                 await uploadToS3(file, process.env.BUCKET_NAME, key);
                 return key;

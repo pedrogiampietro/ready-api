@@ -28,8 +28,9 @@ export const updateProfile = async (req: Request, res: Response) => {
 
     let avatarKey = null;
     let signedUrl = null;
-    if (req.file && req.file.path) {
-      avatarKey = `avatars/${req.file.filename}`;
+
+    if (req.file && req.file.buffer) {
+      avatarKey = `avatars/${req.file.originalname}`;
       await uploadToS3(req.file, process.env.BUCKET_NAME, avatarKey);
       signedUrl = await getSignedUrlForKey(avatarKey);
 
@@ -39,21 +40,6 @@ export const updateProfile = async (req: Request, res: Response) => {
             process.env.BUCKET_NAME as string,
             user.data.avatar_url
           );
-
-          const oldAvatarPath = path.resolve(
-            __dirname,
-            "..",
-            "..",
-            "..",
-            "tmp",
-            user.data.avatar_url
-          );
-
-          if (fs.existsSync(oldAvatarPath)) {
-            fs.unlinkSync(oldAvatarPath);
-          } else {
-            console.log(`Local file ${oldAvatarPath} not found`);
-          }
         } catch (deleteError) {
           console.error("Error deleting old avatar:", deleteError);
         }
