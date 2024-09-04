@@ -486,8 +486,11 @@ export const getPopularDestinations = async () => {
       take: 10,
     });
 
-    return popularDestinations.map((destination) => ({
+    return popularDestinations.map((destination: any) => ({
+      id: destination.id,
       location: destination.destinationLocation,
+      from: destination.departureLocation,
+      totalCost: destination.totalCost,
       count: destination._count.destinationLocation,
     }));
   } catch (error: any) {
