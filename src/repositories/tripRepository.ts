@@ -496,6 +496,12 @@ export const getPopularDestinations = async () => {
             id: true,
             departureLocation: true,
             totalCost: true,
+            banner_bucket: true,
+            reviews: {
+              select: {
+                rating: true,
+              },
+            },
           },
         });
 
@@ -504,6 +510,8 @@ export const getPopularDestinations = async () => {
           location: destination.destinationLocation,
           from: details?.departureLocation,
           totalCost: details?.totalCost,
+          banner_bucket: details?.banner_bucket,
+          rating: details?.reviews,
           count: destination._count.destinationLocation,
         };
       })
