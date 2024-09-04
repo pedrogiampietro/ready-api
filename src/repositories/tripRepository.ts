@@ -307,6 +307,7 @@ export const update = async (tripId: string, tripData: any) => {
       data: {
         title: capitalizeFirstLetter(tripData.title),
         banner: tripData.banner || null,
+        banner_bucket: tripData.banner_bucket || null,
         images: tripData.images || [],
         longitude: 0,
         latitude: 0,
