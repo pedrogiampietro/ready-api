@@ -486,6 +486,7 @@ export const getPopularDestinations = async () => {
       take: 10,
     });
 
+    // Para cada destino, obtenha detalhes e gere uma URL assinada para o banner
     const destinationDetails = await Promise.all(
       popularDestinations.map(async (destination: any) => {
         const details = await prisma.trip.findFirst({
@@ -505,14 +506,19 @@ export const getPopularDestinations = async () => {
           },
         });
 
+        let signedUrl = null;
+        if (details?.banner_bucket) {
+          signedUrl = await getSignedUrlForKey(details.banner_bucket);
+        }
+
         return {
           id: details?.id,
           location: destination.destinationLocation,
           from: details?.departureLocation,
           totalCost: details?.totalCost,
-          banner_bucket: details?.banner_bucket,
-          rating: details?.reviews[0]?.rating || 0,
+          banner_bucket: signedUrl,
           count: destination._count.destinationLocation,
+          rating: details?.reviews[0]?.rating || 0,
         };
       })
     );
