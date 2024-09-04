@@ -7,6 +7,11 @@ const router = Router();
 
 router.get("/", authenticateJWT, tripController.getAllTrip);
 router.get(
+  "/popular-destinations",
+  authenticateJWT,
+  tripController.getPopularDestinations
+); // Adicionando nova rota
+router.get(
   "/trips-by-user/:userId",
   authenticateJWT,
   tripController.getAllTripsByUserId

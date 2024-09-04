@@ -296,3 +296,13 @@ export const getTripDetails = async (req: Request, res: Response) => {
     res.status(404).json({ error: "Trip not found" });
   }
 };
+
+export const getPopularDestinations = async (req: Request, res: Response) => {
+  try {
+    const popularDestinations = await tripService.fetchPopularDestinations();
+    res.status(200).json(popularDestinations);
+  } catch (error: any) {
+    console.error("Error in getPopularDestinations:", error.message);
+    res.status(500).json({ error: "Failed to fetch popular destinations" });
+  }
+};

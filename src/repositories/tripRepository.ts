@@ -1,4 +1,4 @@
-import { PrismaClient, Trip } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import { capitalizeFirstLetter, getSignedUrlForKey } from "../utils";
 
 const prisma = new PrismaClient();
@@ -468,5 +468,30 @@ export const findTripById = async (tripId: string) => {
   } catch (error: any) {
     console.error("Error in findTripById:", error.message);
     throw new Error(`Error finding trip by id: ${error.message}`);
+  }
+};
+
+export const getPopularDestinations = async () => {
+  try {
+    const popularDestinations = await prisma.trip.groupBy({
+      by: ["destinationLocation"],
+      _count: {
+        destinationLocation: true,
+      },
+      orderBy: {
+        _count: {
+          destinationLocation: "desc",
+        },
+      },
+      take: 10,
+    });
+
+    return popularDestinations.map((destination) => ({
+      location: destination.destinationLocation,
+      count: destination._count.destinationLocation,
+    }));
+  } catch (error: any) {
+    console.error("Error in getPopularDestinations:", error.message);
+    throw new Error(`Error fetching popular destinations: ${error.message}`);
   }
 };

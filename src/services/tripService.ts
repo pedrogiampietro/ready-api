@@ -95,3 +95,13 @@ export const canCreateTrip = async (userId: string): Promise<boolean> => {
 
   return true;
 };
+
+export const fetchPopularDestinations = async () => {
+  try {
+    const popularDestinations = await tripRepository.getPopularDestinations();
+    return popularDestinations;
+  } catch (error: any) {
+    console.error("Error in fetchPopularDestinations:", error.message);
+    throw new Error(`Error fetching popular destinations: ${error.message}`);
+  }
+};
