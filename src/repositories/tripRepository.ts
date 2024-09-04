@@ -497,7 +497,7 @@ export const getPopularDestinations = async () => {
             id: true,
             departureLocation: true,
             totalCost: true,
-            banner_bucket: true,
+            banner: true,
             reviews: {
               select: {
                 rating: true,
@@ -507,8 +507,9 @@ export const getPopularDestinations = async () => {
         });
 
         let signedUrl = null;
-        if (details?.banner_bucket) {
-          signedUrl = await getSignedUrlForKey(details.banner_bucket);
+        const serealizedBanner = details?.banner && details.banner.split("/");
+        if (serealizedBanner) {
+          signedUrl = await getSignedUrlForKey(serealizedBanner[1]);
         }
 
         return {
