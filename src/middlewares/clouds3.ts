@@ -1,18 +1,15 @@
 import { PutObjectCommand } from "@aws-sdk/client-s3";
-import fs from "fs";
 import { r2 } from "./cloudflare";
 
 export async function uploadToS3(file: any, bucketName: any, key: any) {
-  if (!file.path) {
-    throw new Error("File path is undefined.");
+  if (!file.buffer) {
+    throw new Error("File buffer is undefined.");
   }
-
-  const fileStream = fs.createReadStream(file.path);
 
   const uploadParams = {
     Bucket: bucketName,
     Key: key,
-    Body: fileStream,
+    Body: file.buffer,
     ContentType: file.mimetype,
   };
 

@@ -182,11 +182,18 @@ export const updateTrip = async (req: any, res: Response) => {
 
     let bannerKey = null;
     let signedUrl = null;
-
-    if (req.files && req.files.banner && req.files.banner[0]) {
-      const bannerFile = req.files.banner[0];
-      bannerKey = `banners/${uuidv4()}-${bannerFile.originalname}`;
-      await uploadToS3(bannerFile.buffer, process.env.BUCKET_NAME, bannerKey);
+    if (
+      req.files &&
+      req.files.banner &&
+      req.files.banner[0] &&
+      req.files.banner[0].buffer
+    ) {
+      bannerKey = `banners/${uuidv4()}-${req.files.banner[0].originalname}`;
+      await uploadToS3(
+        req.files.banner[0].buffer,
+        process.env.BUCKET_NAME,
+        bannerKey
+      );
       signedUrl = await getSignedUrlForKey(bannerKey);
     }
 
@@ -194,9 +201,11 @@ export const updateTrip = async (req: any, res: Response) => {
       req.files && req.files.images
         ? await Promise.all(
             req.files.images.map(async (file: any) => {
-              const key = `images/${uuidv4()}-${file.originalname}`;
-              await uploadToS3(file.buffer, process.env.BUCKET_NAME, key);
-              return key;
+              if (file.buffer) {
+                const key = `images/${uuidv4()}-${file.originalname}`;
+                await uploadToS3(file.buffer, process.env.BUCKET_NAME, key);
+                return key;
+              }
             })
           )
         : [];
