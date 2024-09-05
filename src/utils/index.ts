@@ -24,7 +24,7 @@ export async function getSignedUrlForKey(key: any) {
     Key: key,
   });
 
-  return await getSignedUrl(r2, command, { expiresIn: 3600 });
+  return await getSignedUrl(r2, command, { expiresIn: 604800 });
 }
 
 export async function deleteFromS3(bucketName: string, key: string) {
