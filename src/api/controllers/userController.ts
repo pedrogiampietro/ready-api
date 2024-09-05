@@ -2,8 +2,6 @@ import { Request, Response } from "express";
 import * as userService from "../../services/userService";
 import { uploadToS3 } from "../../middlewares/clouds3";
 import { deleteFromS3, getSignedUrlForKey } from "../../utils";
-import path from "node:path";
-import fs from "node:fs";
 
 export const register = async (req: Request, res: Response) => {
   const user = await userService.register(req.body);
@@ -57,7 +55,7 @@ export const updateProfile = async (req: Request, res: Response) => {
     if (updatedUser.success) {
       return res.json({
         name: updatedUser.data?.name,
-        avatar_url: updatedUser.data?.avatar_url,
+        avatar_url: avatarKey,
         bucket_url: signedUrl,
       });
     } else {

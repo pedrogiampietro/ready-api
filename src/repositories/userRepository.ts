@@ -2,6 +2,7 @@ import { PrismaClient, User } from "@prisma/client";
 import { generateJwt, generateRefreshJwt } from "../utils/jwtHelper";
 import { addMinutes } from "date-fns";
 import bcrypt from "bcrypt";
+import { getSignedUrlForKey } from "../utils";
 
 const prisma = new PrismaClient();
 
@@ -67,6 +68,10 @@ export const findByCredentials = async (credentials: {
     };
   }
 
+  const bucketUrl = user.avatar_url
+    ? await getSignedUrlForKey(user.avatar_url)
+    : null;
+
   const token = generateJwt({ id: user.id });
   const refreshToken = generateRefreshJwt({
     id: user.id,
@@ -81,6 +86,7 @@ export const findByCredentials = async (credentials: {
     message: "Login realizado com sucesso!",
     data: {
       ...user,
+      bucket_url: bucketUrl,
       totalTrips,
     },
     token,
