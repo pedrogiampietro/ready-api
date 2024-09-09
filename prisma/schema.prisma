@@ -14,6 +14,7 @@ model User {
   avatar_url             String?
   bucket_url             String?
   password               String
+  googleId               String?
   name                   String
   resetPasswordToken     String?
   resetPasswordExpiresAt DateTime?

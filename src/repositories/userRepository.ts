@@ -202,3 +202,42 @@ export const updatePassword = async (email: string, newPassword: string) => {
     },
   });
 };
+
+export const createOrFindGoogleUser = async (userData: {
+  email: string;
+  googleId: string;
+  name: string;
+  avatarUrl: string;
+}) => {
+  let user = await prisma.user.findUnique({
+    where: { email: userData.email },
+  });
+
+  if (!user) {
+    user = await prisma.user.create({
+      data: {
+        email: userData.email,
+        googleId: userData.googleId,
+        password: "generated-by-google",
+        name: userData.name,
+        avatar_url: userData.avatarUrl,
+        bucket_url: userData.avatarUrl,
+        plan: {
+          connect: { id: "free-plan-id" },
+        },
+      },
+    });
+
+    return {
+      success: true,
+      message: "Usuário criado com sucesso.",
+      data: user,
+    };
+  }
+
+  return {
+    success: true,
+    message: "Usuário encontrado com sucesso.",
+    data: user,
+  };
+};

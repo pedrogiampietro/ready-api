@@ -1,6 +1,7 @@
 import { User } from "@prisma/client";
 import * as userRepository from "../repositories/userRepository";
 import { sendEmail } from "../utils/nodemailer";
+import { supabase } from "../config/supabase";
 
 export const register = async (userData: User) => {
   return await userRepository.create(userData);
@@ -11,6 +12,42 @@ export const login = async (credentials: {
   password: string;
 }) => {
   return await userRepository.findByCredentials(credentials);
+};
+
+export const googleLogin = async (token: string) => {
+  try {
+    // Autenticação com o Google usando Supabase
+    const { data, error } = (await supabase.auth.signInWithOAuth({
+      provider: "google",
+    })) as any;
+
+    if (error) {
+      return {
+        success: false,
+        message: "Erro na autenticação do Google: " + error.message,
+      };
+    }
+
+    const { email, id: googleId, user_metadata } = data.user;
+
+    // Chamar o repositório para criar ou encontrar o usuário via Google
+    const result = await userRepository.createOrFindGoogleUser({
+      email,
+      googleId,
+      name: user_metadata.full_name,
+      avatarUrl: user_metadata.avatar_url,
+    });
+
+    // Retornar o resultado da operação de login ou criação
+    return {
+      success: result.success,
+      message: result.message,
+      data: result.data,
+      session: data.session, // Sessão do Supabase (opcional)
+    };
+  } catch (error: any) {
+    return { success: false, message: error.message };
+  }
 };
 
 export const updateProfile = async (

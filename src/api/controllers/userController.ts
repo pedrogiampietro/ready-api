@@ -13,6 +13,26 @@ export const login = async (req: Request, res: Response) => {
   res.json(user);
 };
 
+export const googleLogin = async (req: Request, res: Response) => {
+  try {
+    // Call service layer to handle Google login/registration
+    const result = await userService.googleLogin(req.body.token);
+
+    if (!result.success) {
+      return res.status(400).json({ success: false, message: result.message });
+    }
+
+    return res.json({
+      success: true,
+      message: "Login realizado com sucesso!",
+      data: result.data,
+      session: result.session,
+    });
+  } catch (error: any) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 export const updateProfile = async (req: Request, res: Response) => {
   const { userId, name } = req.body;
 
